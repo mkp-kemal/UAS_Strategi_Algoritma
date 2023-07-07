@@ -1,0 +1,60 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	warung := []int{10, 25, 30, 40, 50, 75, 80, 110, 130}
+
+	minStops := int(^uint(0) >> 1)
+	var bestCombination []int
+
+	// Perulangan untuk mencari semua kombinasi
+	for i := 0; i < (1 << len(warung)); i++ {
+		combination := []int{}
+
+		// Memeriksa setiap bit untuk menentukan apakah warung tersebut dipilih atau tidak
+		for j := 0; j < len(warung); j++ {
+			if (i & (1 << j)) != 0 {
+				combination = append(combination, warung[j])
+			}
+		}
+
+		// Memeriksa apakah kombinasi saat ini memenuhi persyaratan
+		if isValidCombination(combination, 140, 30) {
+			// Menghitung jumlah berhenti pada kombinasi saat ini
+			numStops := len(combination)
+
+			// Memeriksa apakah kombinasi saat ini lebih optimal
+			if numStops < minStops {
+				minStops = numStops
+				bestCombination = make([]int, len(combination))
+				copy(bestCombination, combination)
+			}
+		}
+	}
+
+	// Menampilkan titik-titik warung Tono akan berhenti
+	fmt.Print("Titik-titik warung Tono akan berhenti: ")
+	for i := 0; i < len(bestCombination); i++ {
+		fmt.Print(bestCombination[i], " ")
+	}
+	fmt.Println()
+}
+
+// Memeriksa apakah kombinasi titik-titik warung memenuhi persyaratan
+func isValidCombination(combination []int, totalDistance, restDistance int) bool {
+	// Memeriksa apakah total jarak yang dapat ditempuh Tono dengan berhenti di warung-warnug memenuhi persyaratan
+	distance := 0
+	for i := 0; i < len(combination); i++ {
+		if combination[i]-distance > restDistance {
+			return false
+		}
+		distance = combination[i]
+	}
+	if totalDistance-distance > restDistance {
+		return false
+	}
+	return true
+}
